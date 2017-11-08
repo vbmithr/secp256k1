@@ -7,6 +7,10 @@
 #ifndef SECP256K1_FIELD_H
 #define SECP256K1_FIELD_H
 
+#include <stdlib.h>
+#include <stdint.h>
+#include <stdio.h>
+
 /** Field element module.
  *
  *  Field elements can be represented in several ways, but code accessing
@@ -18,19 +22,29 @@
  *    normality.
  */
 
-#if defined HAVE_CONFIG_H
-#include "libsecp256k1-config.h"
-#endif
+typedef struct {
+    uint64_t n[5];
+} secp256k1_fe;
 
-#if defined(USE_FIELD_10X26)
-#include "field_10x26.h"
-#elif defined(USE_FIELD_5X52)
-#include "field_5x52.h"
-#else
-#error "Please select field implementation"
-#endif
+/* Unpacks a constant into a overlapping multi-limbed FE element. */
+#define SECP256K1_FE_CONST(d7, d6, d5, d4, d3, d2, d1, d0) { \
+    (d0) | (((uint64_t)(d1) & 0xFFFFFUL) << 32), \
+    ((uint64_t)(d1) >> 20) | (((uint64_t)(d2)) << 12) | (((uint64_t)(d3) & 0xFFUL) << 44), \
+    ((uint64_t)(d3) >> 8) | (((uint64_t)(d4) & 0xFFFFFFFUL) << 24), \
+    ((uint64_t)(d4) >> 28) | (((uint64_t)(d5)) << 4) | (((uint64_t)(d6) & 0xFFFFUL) << 36), \
+    ((uint64_t)(d6) >> 16) | (((uint64_t)(d7)) << 16) \
+}
 
-#include "util.h"
+typedef struct {
+    uint64_t n[4];
+} secp256k1_fe_storage;
+
+#define SECP256K1_FE_STORAGE_CONST(d7, d6, d5, d4, d3, d2, d1, d0) {{ \
+    (d0) | (((uint64_t)(d1)) << 32), \
+    (d2) | (((uint64_t)(d3)) << 32), \
+    (d4) | (((uint64_t)(d5)) << 32), \
+    (d6) | (((uint64_t)(d7)) << 32) \
+}}
 
 /** Normalize a field element. */
 void secp256k1_fe_normalize(secp256k1_fe *r);
@@ -89,7 +103,7 @@ void secp256k1_fe_add(secp256k1_fe *r, const secp256k1_fe *a);
 
 /** Sets a field element to be the product of two others. Requires the inputs' magnitudes to be at most 8.
  *  The output magnitude is 1 (but not guaranteed to be normalized). */
-void secp256k1_fe_mul(secp256k1_fe *r, const secp256k1_fe *a, const secp256k1_fe * SECP256K1_RESTRICT b);
+void secp256k1_fe_mul(secp256k1_fe *r, const secp256k1_fe *a, const secp256k1_fe * restrict b);
 
 /** Sets a field element to be the square of another. Requires the input's magnitude to be at most 8.
  *  The output magnitude is 1 (but not guaranteed to be normalized). */
