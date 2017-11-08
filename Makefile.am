@@ -9,6 +9,8 @@ JNI_LIB =
 endif
 include_HEADERS = include/secp256k1.h
 include_HEADERS += include/secp256k1_field.h
+include_HEADERS += include/secp256k1_num.h
+include_HEADERS += include/secp256k1_scalar.h
 noinst_HEADERS =
 noinst_HEADERS += src/scalar.h
 noinst_HEADERS += src/scalar_4x64.h

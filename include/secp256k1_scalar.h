@@ -7,21 +7,15 @@
 #ifndef SECP256K1_SCALAR_H
 #define SECP256K1_SCALAR_H
 
-#include "num.h"
+#include <stdint.h>
+#include <secp256k1_num.h>
 
-#if defined HAVE_CONFIG_H
-#include "libsecp256k1-config.h"
-#endif
+/** A scalar modulo the group order of the secp256k1 curve. */
+typedef struct {
+    uint64_t d[4];
+} secp256k1_scalar;
 
-#if defined(EXHAUSTIVE_TEST_ORDER)
-#include "scalar_low.h"
-#elif defined(USE_SCALAR_4X64)
-#include "scalar_4x64.h"
-#elif defined(USE_SCALAR_8X32)
-#include "scalar_8x32.h"
-#else
-#error "Please select scalar implementation"
-#endif
+#define SECP256K1_SCALAR_CONST(d7, d6, d5, d4, d3, d2, d1, d0) {{((uint64_t)(d1)) << 32 | (d0), ((uint64_t)(d3)) << 32 | (d2), ((uint64_t)(d5)) << 32 | (d4), ((uint64_t)(d7)) << 32 | (d6)}}
 
 /** Clear a scalar to prevent the leak of sensitive data. */
 void secp256k1_scalar_clear(secp256k1_scalar *r);
@@ -82,23 +76,14 @@ int secp256k1_scalar_is_high(const secp256k1_scalar *a);
  * Returns -1 if the number was negated, 1 otherwise */
 int secp256k1_scalar_cond_negate(secp256k1_scalar *a, int flag);
 
-#ifndef USE_NUM_NONE
 /** Convert a scalar to a number. */
 void secp256k1_scalar_get_num(secp256k1_num *r, const secp256k1_scalar *a);
 
 /** Get the order of the group as a number. */
 void secp256k1_scalar_order_get_num(secp256k1_num *r);
-#endif
 
 /** Compare two scalars. */
 int secp256k1_scalar_eq(const secp256k1_scalar *a, const secp256k1_scalar *b);
-
-#ifdef USE_ENDOMORPHISM
-/** Find r1 and r2 such that r1+r2*2^128 = a. */
-void secp256k1_scalar_split_128(secp256k1_scalar *r1, secp256k1_scalar *r2, const secp256k1_scalar *a);
-/** Find r1 and r2 such that r1+r2*lambda = a, and r1 and r2 are maximum 128 bits long (see secp256k1_gej_mul_lambda). */
-void secp256k1_scalar_split_lambda(secp256k1_scalar *r1, secp256k1_scalar *r2, const secp256k1_scalar *a);
-#endif
 
 /** Multiply a and b (without taking the modulus!), divide by 2**shift, and round to the nearest integer. Shift must be at least 256. */
 void secp256k1_scalar_mul_shift_var(secp256k1_scalar *r, const secp256k1_scalar *a, const secp256k1_scalar *b, unsigned int shift);
