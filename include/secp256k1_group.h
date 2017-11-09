@@ -7,8 +7,9 @@
 #ifndef SECP256K1_GROUP_H
 #define SECP256K1_GROUP_H
 
-#include "num.h"
-#include "field.h"
+#include <secp256k1_util.h>
+#include <secp256k1_num.h>
+#include <secp256k1_field.h>
 
 /** A group element of the secp256k1 curve, in affine coordinates. */
 typedef struct {
@@ -117,11 +118,6 @@ void secp256k1_gej_add_ge_var(secp256k1_gej *r, const secp256k1_gej *a, const se
 
 /** Set r equal to the sum of a and b (with the inverse of b's Z coordinate passed as bzinv). */
 void secp256k1_gej_add_zinv_var(secp256k1_gej *r, const secp256k1_gej *a, const secp256k1_ge *b, const secp256k1_fe *bzinv);
-
-#ifdef USE_ENDOMORPHISM
-/** Set r to be equal to lambda times a, where lambda is chosen in a way such that this is very fast. */
-void secp256k1_ge_mul_lambda(secp256k1_ge *r, const secp256k1_ge *a);
-#endif
 
 /** Clear a secp256k1_gej to prevent leaking sensitive information. */
 void secp256k1_gej_clear(secp256k1_gej *r);

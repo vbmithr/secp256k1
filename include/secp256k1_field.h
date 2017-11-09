@@ -7,9 +7,7 @@
 #ifndef SECP256K1_FIELD_H
 #define SECP256K1_FIELD_H
 
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdio.h>
+#include <secp256k1_util.h>
 
 /** Field element module.
  *
